@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LegalCheck</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            ⚖️ LegalCheck
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <a href="#scanner">Scanner</a>
+
+            <a href="#about">About</a>
+
+        </div>
+
+    </nav>
+
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <p class="tag">SMART PRODUCT COMPLIANCE</p>
+
+            <h1>
+                Check Product
+                <span>Compliance</span>
+                Instantly.
+            </h1>
+
+            <p class="hero-text">
+                Scan packaged products and identify
+                missing or incorrect mandatory declarations
+                in seconds.
+            </p>
+
+            <a href="#scanner" class="primary-btn">
+                Start Scanning →
+            </a>
+
+        </div>
+
+    </section>
+    <section class="scanner" id="scanner">
+
+        <div class="scanner-content">
+
+            <p class="tag">PRODUCT SCANNER</p>
+
+            <h2>Check Your Product</h2>
+
+            <p>
+                Upload an image of a packaged product
+                to check its mandatory declarations.
+            </p>
+
+            <div class="upload-box">
+
+                <div class="upload-icon">
+                    📄
+                </div>
+
+                <h3>Upload Product Image</h3>
+
+                <p>
+                    Upload a clear image of the product label
+                    or packaging.
+                </p>
+
+                <form action="/scan" method="POST" enctype="multipart/form-data">
+
+                    <input type="file" id="product-image" name="product_image" accept="image/*" required>
+
+                    <button type="submit" class="scan-btn">
+                        Scan Product
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</body>
+
+</html>
