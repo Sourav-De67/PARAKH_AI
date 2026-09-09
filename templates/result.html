@@ -2,46 +2,85 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Scan Result - LegalCheck</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
+
 
 <body>
 
-    <!-- Navigation -->
+
+    <!-- ==============================
+         NAVIGATION
+    =============================== -->
+
     <nav class="navbar">
-        <div class="logo">⚖️ LegalCheck</div>
+
+        <div class="logo">
+            ⚖️ LegalCheck
+        </div>
 
         <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/#scanner">Scanner</a>
-            <a href="/#about">About</a>
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="/#scanner">
+                Scanner
+            </a>
+
+            <a href="/#about">
+                About
+            </a>
+
         </div>
+
     </nav>
 
 
-    <!-- Result Section -->
+
+    <!-- ==============================
+         RESULT SECTION
+    ============================== -->
+
     <section class="result-section">
 
         <div class="result-container">
 
-            <p class="section-label">SCAN RESULT</p>
 
-            <h1>Product Compliance Report</h1>
+            <!-- Header -->
+
+            <p class="section-label">
+                SCAN RESULT
+            </p>
+
+            <h1>
+                Product Compliance Report
+            </h1>
 
             <p class="result-subtitle">
                 Our system has analyzed the uploaded product label.
             </p>
 
 
-            <!-- Uploaded Image -->
+
+            <!-- ==============================
+                 UPLOADED IMAGE
+            ============================== -->
+
             <div class="uploaded-result">
 
-                <h2>Uploaded Product</h2>
+                <h2>
+                    Uploaded Product
+                </h2>
 
                 <img src="{{ url_for('uploaded_file', filename=image_filename) }}" alt="Uploaded Product"
                     class="result-image">
@@ -49,47 +88,168 @@
             </div>
 
 
-            <!-- Compliance Result -->
+
+            <!-- ==============================
+                 COMPLIANCE STATUS
+            ============================== -->
+
             <div class="compliance-card">
 
-                <div class="status-icon">✓</div>
 
-                <h2>Compliant</h2>
+                {% if status == "Compliant" %}
 
-                <p>
-                    No major declaration issues detected.
-                </p>
-
-                <div class="score">
-                    <span>Compliance Score</span>
-                    <strong>92%</strong>
+                <div class="status-icon">
+                    ✓
                 </div>
 
+                <h2>
+                    Compliant
+                </h2>
+
+                <p>
+                    All automatically checkable declarations were detected.
+                </p>
+
+
+                {% elif status == "Non-Compliant" %}
+
+                <div class="status-icon">
+                    ✗
+                </div>
+
+                <h2>
+                    Non-Compliant
+                </h2>
+
+                <p>
+                    One or more required declarations were not detected.
+                </p>
+
+
+                {% else %}
+
+                <div class="status-icon">
+                    !
+                </div>
+
+                <h2>
+                    Verification Required
+                </h2>
+
+                <p>
+                    Some declarations could not be confidently verified by OCR.
+                </p>
+
+
+                {% endif %}
+
+
+
+                <div class="score">
+
+                    <span>
+                        Compliance Status
+                    </span>
+
+                    <strong>
+                        {{ status }}
+                    </strong>
+
+                </div>
+
+
             </div>
 
 
-            <!-- Detected Declarations -->
+
+            <!-- ==============================
+                 DETECTED DECLARATIONS
+            ============================== -->
+
             <div class="declarations">
 
-                <h2>Detected Declarations</h2>
+                <h2>
+                    Detected Declarations
+                </h2>
 
-                <p>✓ Product Name</p>
-                <p>✓ Net Quantity</p>
-                <p>✓ Manufacturer Details</p>
-                <p>✓ MRP</p>
-                <p>✓ Date of Manufacturing</p>
-                <p>✓ Consumer Care Details</p>
+
+                {% for field, found in results.items() %}
+
+
+                {% if found %}
+
+                <p>
+                    ✓ {{ field }}
+                </p>
+
+
+                {% else %}
+
+
+                {% if field == "Common / Generic Name" %}
+
+                <p>
+                    ⚠ {{ field }} — Verification Required
+                </p>
+
+
+                {% else %}
+
+                <p>
+                    ✗ {{ field }} — Missing
+                </p>
+
+                {% endif %}
+
+
+                {% endif %}
+
+
+                {% endfor %}
+
 
             </div>
 
+
+
+            <!-- ==============================
+                 OCR EXTRACTED TEXT
+            ============================== -->
+
+            <div class="declarations">
+
+                <h2>
+                    OCR Extracted Text
+                </h2>
+
+                <pre style="
+                    white-space: pre-wrap;
+                    text-align: left;
+                    background: #f5f7fa;
+                    padding: 20px;
+                    border-radius: 10px;
+                    overflow-x: auto;
+                    line-height: 1.6;
+                    font-family: monospace;
+                ">{{ ocr_text }}</pre>
+
+            </div>
+
+
+
+            <!-- ==============================
+                 SCAN AGAIN
+            ============================== -->
 
             <a href="/#scanner" class="scan-again">
                 Scan Another Product →
             </a>
 
+
         </div>
 
     </section>
+
 
 </body>
 
