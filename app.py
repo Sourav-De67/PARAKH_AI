@@ -7,7 +7,7 @@ from compliance import check_compliance
 from detector import detect_fields
 
 
-# Tell Python where Tesseract is installed
+# Tell Python where Tesscd p    eract is installed
 pytesseract.pytesseract.tesseract_cmd = (
     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 )

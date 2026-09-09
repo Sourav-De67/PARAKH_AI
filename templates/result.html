@@ -7,7 +7,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Scan Result - LegalCheck</title>
+    <title>Scan Result — PARAKH AI National Portal</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
@@ -17,6 +17,8 @@
 <body>
 
 
+
+
     <!-- ==============================
          NAVIGATION
     =============================== -->
@@ -24,7 +26,7 @@
     <nav class="navbar">
 
         <div class="logo">
-            ⚖️ LegalCheck
+            🏛️ PARAKH AI <span>LMPC PORTAL</span>
         </div>
 
         <div class="nav-links">
@@ -58,17 +60,19 @@
 
             <!-- Header -->
 
-            <p class="section-label">
-                SCAN RESULT
-            </p>
+            <div class="result-header">
 
-            <h1>
-                Product Compliance Report
-            </h1>
+                <p class="tag">COMPLIANCE AUDIT REPORT</p>
 
-            <p class="result-subtitle">
-                Our system has analyzed the uploaded product label.
-            </p>
+                <h1>
+                    Product Compliance Report
+                </h1>
+
+                <p class="result-subtitle">
+                    Legal Metrology AI verification report for the uploaded packaged product label.
+                </p>
+
+            </div>
 
 
 
@@ -79,7 +83,7 @@
             <div class="uploaded-result">
 
                 <h2>
-                    Uploaded Product
+                    Uploaded Product Label
                 </h2>
 
                 <img src="{{ url_for('uploaded_file', filename=image_filename) }}" alt="Uploaded Product"
@@ -107,37 +111,37 @@
                 </h2>
 
                 <p>
-                    All automatically checkable declarations were detected.
+                    All mandatory declarations under Legal Metrology Rules were detected.
                 </p>
 
 
                 {% elif status == "Non-Compliant" %}
 
-                <div class="status-icon">
-                    ✗
+                <div class="status-icon" style="background: #dc2626;">
+                    ✕
                 </div>
 
-                <h2>
+                <h2 style="color: #dc2626;">
                     Non-Compliant
                 </h2>
 
                 <p>
-                    One or more required declarations were not detected.
+                    One or more required mandatory declarations were missing or undetected.
                 </p>
 
 
                 {% else %}
 
-                <div class="status-icon">
+                <div class="status-icon" style="background: #d97706;">
                     !
                 </div>
 
-                <h2>
+                <h2 style="color: #d97706;">
                     Verification Required
                 </h2>
 
                 <p>
-                    Some declarations could not be confidently verified by OCR.
+                    Some declarations (such as Common / Generic Name) require manual verification.
                 </p>
 
 
@@ -148,7 +152,7 @@
                 <div class="score">
 
                     <span>
-                        Compliance Status
+                        Audit Compliance Status
                     </span>
 
                     <strong>
@@ -169,7 +173,7 @@
             <div class="declarations">
 
                 <h2>
-                    Detected Declarations
+                    LMPC Rule Checklist Breakdown
                 </h2>
 
 
@@ -179,7 +183,7 @@
                 {% if found %}
 
                 <p>
-                    ✓ {{ field }}
+                    ✓ <strong style="color: #15803d;">{{ field }}</strong> — Detected
                 </p>
 
 
@@ -189,14 +193,14 @@
                 {% if field == "Common / Generic Name" %}
 
                 <p>
-                    ⚠ {{ field }} — Verification Required
+                    ⚠ <strong style="color: #d97706;">{{ field }}</strong> — Verification Required
                 </p>
 
 
                 {% else %}
 
                 <p>
-                    ✗ {{ field }} — Missing
+                    ✕ <strong style="color: #dc2626;">{{ field }}</strong> — Missing
                 </p>
 
                 {% endif %}
@@ -219,18 +223,20 @@
             <div class="declarations">
 
                 <h2>
-                    OCR Extracted Text
+                    OCR Extracted Text Log
                 </h2>
 
                 <pre style="
                     white-space: pre-wrap;
                     text-align: left;
-                    background: #f5f7fa;
+                    background: #f8fafc;
                     padding: 20px;
                     border-radius: 10px;
+                    border: 1px solid #e2e8f0;
                     overflow-x: auto;
                     line-height: 1.6;
                     font-family: monospace;
+                    color: #0f172a;
                 ">{{ ocr_text }}</pre>
 
             </div>
@@ -245,10 +251,26 @@
                 Scan Another Product →
             </a>
 
-
         </div>
 
     </section>
+
+
+    <!-- ==============================
+         FOOTER SECTION
+    ============================== -->
+
+    <footer class="footer">
+
+        <p>© 2026 🇮🇳 PARAKH AI — Legal Metrology Division, Department of Consumer Affairs, Government of India.</p>
+
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/#scanner">Scanner</a>
+            <a href="/#about">About</a>
+        </div>
+
+    </footer>
 
 
 </body>
