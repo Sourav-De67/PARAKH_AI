@@ -7,7 +7,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Scan Result — PARAKH AI National Portal</title>
+    <title>Scan Result - PARAKH AI</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
@@ -17,8 +17,6 @@
 <body>
 
 
-
-
     <!-- ==============================
          NAVIGATION
     =============================== -->
@@ -26,7 +24,7 @@
     <nav class="navbar">
 
         <div class="logo">
-            🏛️ PARAKH AI <span>LMPC PORTAL</span>
+            ⚖️ PARAKH AI
         </div>
 
         <div class="nav-links">
@@ -51,39 +49,39 @@
 
     <!-- ==============================
          RESULT SECTION
-    ============================== -->
+    =============================== -->
 
     <section class="result-section">
 
         <div class="result-container">
 
 
-            <!-- Header -->
+            <!-- ==============================
+                 HEADER
+            =============================== -->
 
-            <div class="result-header">
+            <p class="section-label">
+                SCAN RESULT
+            </p>
 
-                <p class="tag">COMPLIANCE AUDIT REPORT</p>
+            <h1>
+                Product Compliance Report
+            </h1>
 
-                <h1>
-                    Product Compliance Report
-                </h1>
-
-                <p class="result-subtitle">
-                    Legal Metrology AI verification report for the uploaded packaged product label.
-                </p>
-
-            </div>
+            <p class="result-subtitle">
+                Our system has analyzed the uploaded product label.
+            </p>
 
 
 
             <!-- ==============================
                  UPLOADED IMAGE
-            ============================== -->
+            =============================== -->
 
             <div class="uploaded-result">
 
                 <h2>
-                    Uploaded Product Label
+                    Uploaded Product
                 </h2>
 
                 <img src="{{ url_for('uploaded_file', filename=image_filename) }}" alt="Uploaded Product"
@@ -95,7 +93,7 @@
 
             <!-- ==============================
                  COMPLIANCE STATUS
-            ============================== -->
+            =============================== -->
 
             <div class="compliance-card">
 
@@ -111,48 +109,68 @@
                 </h2>
 
                 <p>
-                    All mandatory declarations under Legal Metrology Rules were detected.
+                    All required declarations were detected.
                 </p>
 
 
                 {% elif status == "Non-Compliant" %}
 
-                <div class="status-icon" style="background: #dc2626;">
-                    ✕
+                <div class="status-icon">
+                    ✗
                 </div>
 
-                <h2 style="color: #dc2626;">
+                <h2>
                     Non-Compliant
                 </h2>
 
                 <p>
-                    One or more required mandatory declarations were missing or undetected.
+                    One or more required declarations were not detected.
                 </p>
 
 
                 {% else %}
 
-                <div class="status-icon" style="background: #d97706;">
+                <div class="status-icon">
                     !
                 </div>
 
-                <h2 style="color: #d97706;">
+                <h2>
                     Verification Required
                 </h2>
 
                 <p>
-                    Some declarations (such as Common / Generic Name) require manual verification.
+                    Some declarations could not be confidently verified by OCR.
                 </p>
-
 
                 {% endif %}
 
 
 
+                <!-- ==============================
+                     COMPLIANCE SCORE
+                =============================== -->
+
                 <div class="score">
 
                     <span>
-                        Audit Compliance Status
+                        Compliance Score
+                    </span>
+
+                    <strong>
+                        {{ percentage }}%
+                    </strong>
+
+                </div>
+
+
+                <!-- ==============================
+                     COMPLIANCE STATUS
+                =============================== -->
+
+                <div class="score">
+
+                    <span>
+                        Compliance Status
                     </span>
 
                     <strong>
@@ -167,47 +185,99 @@
 
 
             <!-- ==============================
-                 DETECTED DECLARATIONS
-            ============================== -->
+                 REQUIRED DECLARATIONS
+            =============================== -->
 
             <div class="declarations">
 
                 <h2>
-                    LMPC Rule Checklist Breakdown
+                    LMPC Rule Checklist
                 </h2>
 
+                <p class="checklist-subtitle">
+                    Required declaration verification based on the scanned product label.
+                </p>
+
+
+                <!-- ==============================
+                     REQUIRED FIELDS
+                =============================== -->
 
                 {% for field, found in results.items() %}
+
+                {% if field != "Country of Origin"
+                and field != "Best Before / Use By"
+                and field != "Dimensions" %}
 
 
                 {% if found %}
 
                 <p>
-                    ✓ <strong style="color: #15803d;">{{ field }}</strong> — Detected
+                    ✓ {{ field }} — Detected
                 </p>
 
 
                 {% else %}
-
 
                 {% if field == "Common / Generic Name" %}
 
                 <p>
-                    ⚠ <strong style="color: #d97706;">{{ field }}</strong> — Verification Required
+                    ⚠ {{ field }} — Verification Required
                 </p>
-
 
                 {% else %}
 
                 <p>
-                    ✕ <strong style="color: #dc2626;">{{ field }}</strong> — Missing
+                    ✗ {{ field }} — Missing
+                </p>
+
+                {% endif %}
+
+                {% endif %}
+
+
+                {% endif %}
+
+                {% endfor %}
+
+
+
+                <!-- ==============================
+                     OPTIONAL / CONDITIONAL
+                =============================== -->
+
+                <h2 style="margin-top: 30px;">
+                    Conditional / Optional Declarations
+                </h2>
+
+                <p class="checklist-subtitle">
+                    These declarations may apply depending on the product category.
+                </p>
+
+
+                {% for field, found in results.items() %}
+
+                {% if field == "Country of Origin"
+                or field == "Best Before / Use By"
+                or field == "Dimensions" %}
+
+
+                {% if found %}
+
+                <p>
+                    ℹ {{ field }} — ✓
+                </p>
+
+                {% else %}
+
+                <p>
+                    ℹ {{ field }} — ✗
                 </p>
 
                 {% endif %}
 
 
                 {% endif %}
-
 
                 {% endfor %}
 
@@ -217,60 +287,17 @@
 
 
             <!-- ==============================
-                 OCR EXTRACTED TEXT
-            ============================== -->
-
-            <div class="declarations">
-
-                <h2>
-                    OCR Extracted Text Log
-                </h2>
-
-                <pre style="
-                    white-space: pre-wrap;
-                    text-align: left;
-                    background: #f8fafc;
-                    padding: 20px;
-                    border-radius: 10px;
-                    border: 1px solid #e2e8f0;
-                    overflow-x: auto;
-                    line-height: 1.6;
-                    font-family: monospace;
-                    color: #0f172a;
-                ">{{ ocr_text }}</pre>
-
-            </div>
-
-
-
-            <!-- ==============================
                  SCAN AGAIN
-            ============================== -->
+            =============================== -->
 
             <a href="/#scanner" class="scan-again">
                 Scan Another Product →
             </a>
 
+
         </div>
 
     </section>
-
-
-    <!-- ==============================
-         FOOTER SECTION
-    ============================== -->
-
-    <footer class="footer">
-
-        <p>© 2026 🇮🇳 PARAKH AI — Legal Metrology Division, Department of Consumer Affairs, Government of India.</p>
-
-        <div class="footer-links">
-            <a href="/">Home</a>
-            <a href="/#scanner">Scanner</a>
-            <a href="/#about">About</a>
-        </div>
-
-    </footer>
 
 
 </body>

@@ -29,8 +29,8 @@ if image is None:
 image_up = cv2.resize(
     image,
     None,
-    fx=3,
-    fy=3,
+    fx=5,
+    fy=5,
     interpolation=cv2.INTER_CUBIC
 )
 
