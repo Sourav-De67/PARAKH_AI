@@ -23,7 +23,6 @@ PRIMARY_FIELDS = [
     "Consumer Care Details",
 
     "Relevant Date Declaration"
-
 ]
 
 
@@ -39,7 +38,6 @@ CONDITIONAL_FIELDS = [
     "Best Before / Use By",
 
     "Dimensions"
-
 ]
 
 
@@ -598,107 +596,23 @@ def check_compliance(detected_fields, ocr_text=""):
     # DETERMINE STATUS
     # ======================================================
 
-    if primary_detected == len(
-        PRIMARY_FIELDS
-    ):
+    # ------------------------------------------------------
+    # 96% - 100%  → COMPLIANT
+    # 85% - 95%   → VERIFICATION REQUIRED
+    # 0% - 84%    → NON-COMPLIANT
+    # ------------------------------------------------------
 
-        # All primary declarations detected
+    if percentage >= 96:
 
-        if (
+        status = "Compliant"
 
-            imported_product
+    elif percentage >= 85:
 
-            and
-
-            not results["Country of Origin"]
-
-        ):
-
-            status = "Non-Compliant"
-
-        else:
-
-            status = "Compliant"
-
+        status = "Verification Required"
 
     else:
 
-        # Some primary declarations are missing
-
-        # --------------------------------------------------
-        # Count packaging evidence
-        # --------------------------------------------------
-
-        packaging_keywords = [
-
-            "mrp",
-
-            "net",
-
-            "quantity",
-
-            "weight",
-
-            "manufactured",
-
-            "manufacturer",
-
-            "marketed",
-
-            "packed",
-
-            "packer",
-
-            "importer",
-
-            "mfd",
-
-            "mfg",
-
-            "ingredients",
-
-            "fssai",
-
-            "consumer",
-
-            "customer",
-
-            "helpline",
-
-            "complaint",
-
-            "feedback",
-
-            "unit sale",
-
-            "best before",
-
-            "use by",
-
-            "country of origin",
-
-            "made in"
-
-        ]
-
-
-        evidence_count = 0
-
-
-        for keyword in packaging_keywords:
-
-            if keyword in ocr_text:
-
-                evidence_count += 1
-
-
-        if evidence_count < 3:
-
-            status = "Verification Required"
-
-        else:
-
-            status = "Non-Compliant"
+        status = "Non-Compliant"
 
 
     # ======================================================
