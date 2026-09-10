@@ -95,51 +95,51 @@
                  COMPLIANCE STATUS
             =============================== -->
 
-            <div class="compliance-card">
+            <div class="compliance-card {% if status == 'Compliant' and percentage > 0 %}card-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}card-non-compliant{% else %}card-warning{% endif %}">
 
 
-                {% if status == "Compliant" %}
+                {% if status == "Compliant" and percentage > 0 %}
 
-                <div class="status-icon">
+                <div class="status-icon status-compliant">
                     ✓
                 </div>
 
-                <h2>
+                <h2 class="status-title-compliant">
                     Compliant
                 </h2>
 
                 <p>
-                    All required declarations were detected.
+                    All required declarations were successfully detected on the packaging label.
                 </p>
 
 
-                {% elif status == "Non-Compliant" %}
+                {% elif status == "Non-Compliant" or status == "NON-COMPLIANT" or percentage == 0 %}
 
-                <div class="status-icon">
+                <div class="status-icon status-non-compliant">
                     ✗
                 </div>
 
-                <h2>
+                <h2 class="status-title-non-compliant">
                     Non-Compliant
                 </h2>
 
                 <p>
-                    One or more required declarations were not detected.
+                    One or more required legal declarations are missing or incorrect under Indian Legal Metrology Rules.
                 </p>
 
 
                 {% else %}
 
-                <div class="status-icon">
+                <div class="status-icon status-warning">
                     !
                 </div>
 
-                <h2>
+                <h2 class="status-title-warning">
                     Verification Required
                 </h2>
 
                 <p>
-                    Some declarations could not be confidently verified by OCR.
+                    Some mandatory declarations could not be confidently verified from the scanned label.
                 </p>
 
                 {% endif %}
@@ -147,35 +147,35 @@
 
 
                 <!-- ==============================
-                     COMPLIANCE SCORE
+                     COMPLIANCE SCORE & STATUS
                 =============================== -->
 
-                <div class="score">
+                <div class="score-grid">
 
-                    <span>
-                        Compliance Score
-                    </span>
+                    <div class="score-card {% if status == 'Compliant' and percentage > 0 %}score-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}score-non-compliant{% else %}score-warning{% endif %}">
 
-                    <strong>
-                        {{ percentage }}%
-                    </strong>
+                        <span>
+                            Compliance Score
+                        </span>
 
-                </div>
+                        <strong>
+                            {{ percentage }}%
+                        </strong>
+
+                    </div>
 
 
-                <!-- ==============================
-                     COMPLIANCE STATUS
-                =============================== -->
+                    <div class="score-card {% if status == 'Compliant' and percentage > 0 %}score-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}score-non-compliant{% else %}score-warning{% endif %}">
 
-                <div class="score">
+                        <span>
+                            Compliance Status
+                        </span>
 
-                    <span>
-                        Compliance Status
-                    </span>
+                        <strong>
+                            {{ status }}
+                        </strong>
 
-                    <strong>
-                        {{ status }}
-                    </strong>
+                    </div>
 
                 </div>
 
@@ -195,7 +195,7 @@
                 </h2>
 
                 <p class="checklist-subtitle">
-                    Required declaration verification based on the scanned product label.
+                    Verification report of mandatory declarations on product label.
                 </p>
 
 
@@ -203,42 +203,60 @@
                      REQUIRED FIELDS
                 =============================== -->
 
-                {% for field, found in results.items() %}
+                <div class="checklist-items">
 
-                {% if field != "Country of Origin"
-                and field != "Best Before / Use By"
-                and field != "Dimensions" %}
+                    {% for field, found in results.items() %}
 
-
-                {% if found %}
-
-                <p>
-                    ✓ {{ field }} — Detected
-                </p>
+                    {% if field != "Country of Origin"
+                    and field != "Best Before / Use By"
+                    and field != "Dimensions" %}
 
 
-                {% else %}
+                    {% if found %}
 
-                {% if field == "Common / Generic Name" %}
-
-                <p>
-                    ⚠ {{ field }} — Verification Required
-                </p>
-
-                {% else %}
-
-                <p>
-                    ✗ {{ field }} — Missing
-                </p>
-
-                {% endif %}
-
-                {% endif %}
+                    <div class="check-row row-pass">
+                        <span class="row-icon icon-pass">✓</span>
+                        <span class="row-name">{{ field }}</span>
+                        <span class="row-badge badge-pass">Detected</span>
+                    </div>
 
 
-                {% endif %}
+                    {% else %}
 
-                {% endfor %}
+                    {% if field == "Common / Generic Name" %}
+
+                    <div class="check-row row-warn">
+                        <span class="row-icon icon-warn">⚠</span>
+                        <span class="row-name">{{ field }}</span>
+                        <span class="row-badge badge-warn">Verification Required</span>
+                    </div>
+
+                    {% else %}
+
+                    <div class="check-row row-fail">
+                        <span class="row-icon icon-fail">✗</span>
+                        <span class="row-name">{{ field }}</span>
+                        <span class="row-badge badge-fail">Missing</span>
+                    </div>
+
+                    {% endif %}
+
+                    {% endif %}
+
+
+                    {% endif %}
+
+                    {% endfor %}
+
+                    {% if not results %}
+                    <div class="check-row row-fail">
+                        <span class="row-icon icon-fail">✗</span>
+                        <span class="row-name">Packaged Commodity Verification</span>
+                        <span class="row-badge badge-fail">Invalid Label / Not Detected</span>
+                    </div>
+                    {% endif %}
+
+                </div>
 
 
 
@@ -246,40 +264,47 @@
                      OPTIONAL / CONDITIONAL
                 =============================== -->
 
-                <h2 style="margin-top: 30px;">
+                <h2 style="margin-top: 35px;">
                     Conditional / Optional Declarations
                 </h2>
 
                 <p class="checklist-subtitle">
-                    These declarations may apply depending on the product category.
+                    These declarations apply depending on the product category or origin.
                 </p>
 
+                <div class="checklist-items">
 
-                {% for field, found in results.items() %}
+                    {% for field, found in results.items() %}
 
-                {% if field == "Country of Origin"
-                or field == "Best Before / Use By"
-                or field == "Dimensions" %}
-
-
-                {% if found %}
-
-                <p>
-                    ℹ {{ field }} — ✓
-                </p>
-
-                {% else %}
-
-                <p>
-                    ℹ {{ field }} — ✗
-                </p>
-
-                {% endif %}
+                    {% if field == "Country of Origin"
+                    or field == "Best Before / Use By"
+                    or field == "Dimensions" %}
 
 
-                {% endif %}
+                    {% if found %}
 
-                {% endfor %}
+                    <div class="check-row row-pass">
+                        <span class="row-icon icon-pass">✓</span>
+                        <span class="row-name">{{ field }}</span>
+                        <span class="row-badge badge-pass">Verified</span>
+                    </div>
+
+                    {% else %}
+
+                    <div class="check-row row-fail">
+                        <span class="row-icon icon-fail">✗</span>
+                        <span class="row-name">{{ field }}</span>
+                        <span class="row-badge badge-fail">Not Present</span>
+                    </div>
+
+                    {% endif %}
+
+
+                    {% endif %}
+
+                    {% endfor %}
+
+                </div>
 
 
             </div>
