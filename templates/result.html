@@ -11,6 +11,26 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+    <style>
+        .download-report-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 13px 24px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .download-report-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+    </style>
+
 </head>
 
 
@@ -93,9 +113,10 @@
 
             <!-- ==============================
                  COMPLIANCE STATUS
-            =============================== -->
+            ============================== -->
 
-            <div class="compliance-card {% if status == 'Compliant' and percentage > 0 %}card-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}card-non-compliant{% else %}card-warning{% endif %}">
+            <div
+                class="compliance-card {% if status == 'Compliant' and percentage > 0 %}card-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}card-non-compliant{% else %}card-warning{% endif %}">
 
 
                 {% if status == "Compliant" and percentage > 0 %}
@@ -152,7 +173,8 @@
 
                 <div class="score-grid">
 
-                    <div class="score-card {% if status == 'Compliant' and percentage > 0 %}score-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}score-non-compliant{% else %}score-warning{% endif %}">
+                    <div
+                        class="score-card {% if status == 'Compliant' and percentage > 0 %}score-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}score-non-compliant{% else %}score-warning{% endif %}">
 
                         <span>
                             Compliance Score
@@ -165,7 +187,8 @@
                     </div>
 
 
-                    <div class="score-card {% if status == 'Compliant' and percentage > 0 %}score-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}score-non-compliant{% else %}score-warning{% endif %}">
+                    <div
+                        class="score-card {% if status == 'Compliant' and percentage > 0 %}score-compliant{% elif status == 'Non-Compliant' or status == 'NON-COMPLIANT' or percentage == 0 %}score-non-compliant{% else %}score-warning{% endif %}">
 
                         <span>
                             Compliance Status
@@ -178,6 +201,20 @@
                     </div>
 
                 </div>
+
+
+
+                <!-- ==============================
+                     DOWNLOAD PDF REPORT
+                =============================== -->
+
+                {% if status in ["Non-Compliant", "Verification Required", "NON-COMPLIANT"] and report_filename %}
+
+                <a href="{{ url_for('download_report', filename=report_filename) }}" class="download-report-btn">
+                    📄 Download PDF Report
+                </a>
+
+                {% endif %}
 
 
             </div>
@@ -199,6 +236,7 @@
                 </p>
 
 
+
                 <!-- ==============================
                      REQUIRED FIELDS
                 =============================== -->
@@ -215,9 +253,19 @@
                     {% if found %}
 
                     <div class="check-row row-pass">
-                        <span class="row-icon icon-pass">✓</span>
-                        <span class="row-name">{{ field }}</span>
-                        <span class="row-badge badge-pass">Detected</span>
+
+                        <span class="row-icon icon-pass">
+                            ✓
+                        </span>
+
+                        <span class="row-name">
+                            {{ field }}
+                        </span>
+
+                        <span class="row-badge badge-pass">
+                            Detected
+                        </span>
+
                     </div>
 
 
@@ -226,34 +274,66 @@
                     {% if field == "Common / Generic Name" %}
 
                     <div class="check-row row-warn">
-                        <span class="row-icon icon-warn">⚠</span>
-                        <span class="row-name">{{ field }}</span>
-                        <span class="row-badge badge-warn">Verification Required</span>
+
+                        <span class="row-icon icon-warn">
+                            ⚠
+                        </span>
+
+                        <span class="row-name">
+                            {{ field }}
+                        </span>
+
+                        <span class="row-badge badge-warn">
+                            Verification Required
+                        </span>
+
                     </div>
 
                     {% else %}
 
                     <div class="check-row row-fail">
-                        <span class="row-icon icon-fail">✗</span>
-                        <span class="row-name">{{ field }}</span>
-                        <span class="row-badge badge-fail">Missing</span>
+
+                        <span class="row-icon icon-fail">
+                            ✗
+                        </span>
+
+                        <span class="row-name">
+                            {{ field }}
+                        </span>
+
+                        <span class="row-badge badge-fail">
+                            Missing
+                        </span>
+
                     </div>
 
                     {% endif %}
 
                     {% endif %}
-
 
                     {% endif %}
 
                     {% endfor %}
 
+
                     {% if not results %}
+
                     <div class="check-row row-fail">
-                        <span class="row-icon icon-fail">✗</span>
-                        <span class="row-name">Packaged Commodity Verification</span>
-                        <span class="row-badge badge-fail">Invalid Label / Not Detected</span>
+
+                        <span class="row-icon icon-fail">
+                            ✗
+                        </span>
+
+                        <span class="row-name">
+                            Packaged Commodity Verification
+                        </span>
+
+                        <span class="row-badge badge-fail">
+                            Invalid Label / Not Detected
+                        </span>
+
                     </div>
+
                     {% endif %}
 
                 </div>
@@ -265,12 +345,17 @@
                 =============================== -->
 
                 <h2 style="margin-top: 35px;">
+
                     Conditional / Optional Declarations
+
                 </h2>
 
                 <p class="checklist-subtitle">
+
                     These declarations apply depending on the product category or origin.
+
                 </p>
+
 
                 <div class="checklist-items">
 
@@ -284,17 +369,37 @@
                     {% if found %}
 
                     <div class="check-row row-pass">
-                        <span class="row-icon icon-pass">✓</span>
-                        <span class="row-name">{{ field }}</span>
-                        <span class="row-badge badge-pass">Verified</span>
+
+                        <span class="row-icon icon-pass">
+                            ✓
+                        </span>
+
+                        <span class="row-name">
+                            {{ field }}
+                        </span>
+
+                        <span class="row-badge badge-pass">
+                            Verified
+                        </span>
+
                     </div>
 
                     {% else %}
 
                     <div class="check-row row-fail">
-                        <span class="row-icon icon-fail">✗</span>
-                        <span class="row-name">{{ field }}</span>
-                        <span class="row-badge badge-fail">Not Present</span>
+
+                        <span class="row-icon icon-fail">
+                            ✗
+                        </span>
+
+                        <span class="row-name">
+                            {{ field }}
+                        </span>
+
+                        <span class="row-badge badge-fail">
+                            Not Present
+                        </span>
+
                     </div>
 
                     {% endif %}
@@ -316,7 +421,9 @@
             =============================== -->
 
             <a href="/#scanner" class="scan-again">
+
                 Scan Another Product →
+
             </a>
 
 

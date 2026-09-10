@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory, send_file
 import os
 import pytesseract
 import cv2
 
 from compliance import check_compliance
 from detector import detect_fields, is_packaged_commodity
+from report import generate_report
 
 
 # ==========================================================
@@ -32,10 +33,21 @@ UPLOAD_FOLDER = os.path.join(
     "uploads"
 )
 
+REPORT_FOLDER = os.path.join(
+    app.root_path,
+    "reports"
+)
+
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["REPORT_FOLDER"] = REPORT_FOLDER
 
 os.makedirs(
     UPLOAD_FOLDER,
+    exist_ok=True
+)
+
+os.makedirs(
+    REPORT_FOLDER,
     exist_ok=True
 )
 
@@ -62,6 +74,30 @@ def uploaded_file(filename):
     return send_from_directory(
         app.config["UPLOAD_FOLDER"],
         filename
+    )
+
+
+# ==========================================================
+# DOWNLOAD PDF REPORT
+# ==========================================================
+
+@app.route("/download-report/<filename>")
+def download_report(filename):
+
+    report_path = os.path.join(
+        app.config["REPORT_FOLDER"],
+        filename
+    )
+
+    if not os.path.exists(report_path):
+
+        return "Report not found!", 404
+
+
+    return send_file(
+        report_path,
+        as_attachment=True,
+        download_name=filename
     )
 
 
@@ -162,18 +198,6 @@ def scan():
     # ======================================================
     # COMMODITY CHECK
     # ======================================================
-    #
-    # FIRST CHECK WHETHER THE IMAGE APPEARS TO BE A
-    # PACKAGED COMMODITY.
-    #
-    # If NOT a commodity:
-    #       0%
-    #       Non-Compliant / Invalid Image
-    #
-    # If YES:
-    #       Continue to declaration detection
-    #       and compliance calculation.
-    # ======================================================
 
     commodity_detected = is_packaged_commodity(
         ocr_text
@@ -248,6 +272,62 @@ def scan():
     )
 
 
+    # ======================================================
+    # GENERATE PDF REPORT
+    # ======================================================
+
+    report_filename = (
+
+        os.path.splitext(
+            image_file.filename
+        )[0]
+
+        + "_compliance_report.pdf"
+
+    )
+
+
+    report_path = os.path.join(
+
+        app.config["REPORT_FOLDER"],
+
+        report_filename
+
+    )
+
+
+    # ------------------------------------------------------
+    # ONLY GENERATE REPORT FOR:
+    #
+    # NON-COMPLIANT
+    # VERIFICATION REQUIRED
+    # ------------------------------------------------------
+
+    if status in [
+
+        "Non-Compliant",
+        "Verification Required",
+        "NON-COMPLIANT"
+
+    ]:
+
+        generate_report(
+
+            output_path=report_path,
+
+            status=status,
+
+            percentage=percentage,
+
+            results=results,
+
+            ocr_text=ocr_text,
+
+            image_path=image_path
+
+        )
+
+
     # ------------------------------------------------------
     # SHOW RESULT PAGE
     # ------------------------------------------------------
@@ -266,7 +346,9 @@ def scan():
 
         ocr_text=ocr_text,
 
-        commodity_detected=True
+        commodity_detected=True,
+
+        report_filename=report_filename
 
     )
 
