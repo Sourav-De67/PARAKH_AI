@@ -10,3 +10,5 @@ venv/
 uploads/
 reports/
 *.pdf
+*.db
+*.sqlite3
