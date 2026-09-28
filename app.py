@@ -119,16 +119,24 @@ def scan():
         return "Error reading uploaded image."
 
     # ------------------------------------------------------
-    # IMAGE PREPROCESSING (RENDER OPTIMIZED)
+    # IMAGE PREPROCESSING (BALANCED FOR RENDER)
     # ------------------------------------------------------
 
     height, width = image.shape[:2]
 
-    max_width = 1400
+    # Small images get enlarged 2x
+    if width < 1200:
+        image = cv2.resize(
+            image,
+            None,
+            fx=2,
+            fy=2,
+            interpolation=cv2.INTER_CUBIC
+        )
 
-    if width > max_width:
-        scale = max_width / width
-
+    # Very large images get reduced
+    elif width > 1800:
+        scale = 1800 / width
         image = cv2.resize(
             image,
             None,
@@ -150,15 +158,19 @@ def scan():
     processed = clahe.apply(gray)
 
     # ------------------------------------------------------
-    # OCR (FASTER FOR RENDER)
+    # OCR (BETTER FOR PACKAGED LABELS)
     # ------------------------------------------------------
 
     try:
         ocr_text = pytesseract.image_to_string(
             processed,
-            config="--oem 3 --psm 6",
-            timeout=20
+            config="--oem 3 --psm 11",
+            timeout=25
         )
+
+        # Temporary debug (remove later if you want)
+        print("OCR TEXT:", ocr_text[:500], flush=True)
+
     except RuntimeError:
         return render_template(
             "result.html",
