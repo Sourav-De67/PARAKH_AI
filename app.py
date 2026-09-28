@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_from_directory, send_fil
 import os
 import cv2
 import pytesseract
+import shutil
 
 from detector import detect_fields, is_packaged_commodity
 from compliance import check_compliance
@@ -12,9 +13,7 @@ from database import init_db, save_scan
 # TESSERACT CONFIGURATION
 # ==========================================================
 
-import shutil
-
-# Use Windows path locally, Linux path on Render
+# Windows locally, Linux on Render
 if os.name == "nt":
     pytesseract.pytesseract.tesseract_cmd = (
         r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -120,16 +119,23 @@ def scan():
         return "Error reading uploaded image."
 
     # ------------------------------------------------------
-    # IMAGE PREPROCESSING
+    # IMAGE PREPROCESSING (RENDER OPTIMIZED)
     # ------------------------------------------------------
 
-    image = cv2.resize(
-        image,
-        None,
-        fx=5,
-        fy=5,
-        interpolation=cv2.INTER_CUBIC
-    )
+    height, width = image.shape[:2]
+
+    max_width = 1400
+
+    if width > max_width:
+        scale = max_width / width
+
+        image = cv2.resize(
+            image,
+            None,
+            fx=scale,
+            fy=scale,
+            interpolation=cv2.INTER_AREA
+        )
 
     gray = cv2.cvtColor(
         image,
@@ -144,13 +150,25 @@ def scan():
     processed = clahe.apply(gray)
 
     # ------------------------------------------------------
-    # OCR
+    # OCR (FASTER FOR RENDER)
     # ------------------------------------------------------
 
-    ocr_text = pytesseract.image_to_string(
-        processed,
-        config="--psm 11"
-    )
+    try:
+        ocr_text = pytesseract.image_to_string(
+            processed,
+            config="--oem 3 --psm 6",
+            timeout=20
+        )
+    except RuntimeError:
+        return render_template(
+            "result.html",
+            image_filename=image_file.filename,
+            results={},
+            status="Verification Required",
+            percentage=0,
+            commodity_detected=True,
+            report_filename=None
+        )
 
     # ------------------------------------------------------
     # COMMODITY CHECK
@@ -164,7 +182,6 @@ def scan():
         status = "NON-COMPLIANT"
         percentage = 0
 
-        # Save rejected/non-product scans too
         print("➡ Calling save_scan() for NON-COMMODITY", flush=True)
 
         save_scan(
@@ -207,9 +224,9 @@ def scan():
         ocr_text
     )
 
-    # ======================================================
+    # ------------------------------------------------------
     # SAVE TO SQLITE DATABASE
-    # ======================================================
+    # ------------------------------------------------------
 
     print("➡ Calling save_scan()", flush=True)
 
@@ -222,9 +239,9 @@ def scan():
 
     print("⬅ Returned from save_scan()", flush=True)
 
-    # ======================================================
+    # ------------------------------------------------------
     # GENERATE PDF REPORT
-    # ======================================================
+    # ------------------------------------------------------
 
     report_filename = (
         os.path.splitext(image_file.filename)[0]
