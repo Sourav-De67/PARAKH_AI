@@ -12,9 +12,15 @@ from database import init_db, save_scan
 # TESSERACT CONFIGURATION
 # ==========================================================
 
-pytesseract.pytesseract.tesseract_cmd = (
-    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-)
+import shutil
+
+# Use Windows path locally, Linux path on Render
+if os.name == "nt":
+    pytesseract.pytesseract.tesseract_cmd = (
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    )
+else:
+    pytesseract.pytesseract.tesseract_cmd = shutil.which("tesseract") or "tesseract"
 
 # ==========================================================
 # FLASK APP
