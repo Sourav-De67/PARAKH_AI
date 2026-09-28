@@ -124,7 +124,6 @@ def scan():
 
     height, width = image.shape[:2]
 
-    # Small images get enlarged 2x
     if width < 1200:
         image = cv2.resize(
             image,
@@ -134,7 +133,6 @@ def scan():
             interpolation=cv2.INTER_CUBIC
         )
 
-    # Very large images get reduced
     elif width > 1800:
         scale = 1800 / width
         image = cv2.resize(
@@ -158,7 +156,7 @@ def scan():
     processed = clahe.apply(gray)
 
     # ------------------------------------------------------
-    # OCR (BETTER FOR PACKAGED LABELS)
+    # OCR
     # ------------------------------------------------------
 
     try:
@@ -168,8 +166,10 @@ def scan():
             timeout=25
         )
 
-        # Temporary debug (remove later if you want)
-        print("OCR TEXT:", ocr_text[:500], flush=True)
+        # Better logging for Render
+        app.logger.info("========== OCR OUTPUT ==========")
+        app.logger.info(ocr_text[:1000])
+        app.logger.info("================================")
 
     except RuntimeError:
         return render_template(
@@ -194,7 +194,7 @@ def scan():
         status = "NON-COMPLIANT"
         percentage = 0
 
-        print("➡ Calling save_scan() for NON-COMMODITY", flush=True)
+        app.logger.info("Saving NON-COMMODITY scan")
 
         save_scan(
             image_name=image_file.filename,
@@ -202,8 +202,6 @@ def scan():
             percentage=percentage,
             results=results
         )
-
-        print("⬅ Returned from save_scan()", flush=True)
 
         return render_template(
             "result.html",
@@ -240,16 +238,12 @@ def scan():
     # SAVE TO SQLITE DATABASE
     # ------------------------------------------------------
 
-    print("➡ Calling save_scan()", flush=True)
-
     save_scan(
         image_name=image_file.filename,
         status=status,
         percentage=percentage,
         results=results
     )
-
-    print("⬅ Returned from save_scan()", flush=True)
 
     # ------------------------------------------------------
     # GENERATE PDF REPORT
