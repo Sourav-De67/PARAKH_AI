@@ -23,19 +23,19 @@ PARAKH AI is a Flask-based web application that automatically checks whether pac
 
 ### Home Page
 
-![Home](screenshot/home.png)
+![Home](screenshots/home.png)
 
 ### Scan Result
 
-![Result](screenshot/result.png)
+![Result](screenshots/result.png)
 
 ### PDF Report
 
-![PDF](screenshot/pdf.png)
+![PDF](screenshots/pdf.png)
 
 ### SQLite Database
 
-![Database](screenshot/database.png)
+![Database](screenshots/database.png)
 
 ---
 
@@ -86,7 +86,7 @@ SIH-26034/
 ├── parakh_ai.db
 ├── uploads/
 ├── reports/
-├── screenshot/
+├── screenshots/
 ├── templates/
 ├── static/
 └── README.md
