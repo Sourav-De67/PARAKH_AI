@@ -1,54 +1,96 @@
 # ⚖️ PARAKH AI
 
+![Python](https://img.shields.io/badge/Python-3.13-blue)
+![Flask](https://img.shields.io/badge/Flask-Backend-black)
+![Docker](https://img.shields.io/badge/Docker-Deployed-blue)
+![Railway](https://img.shields.io/badge/Hosted_on-Railway-purple)
+![SQLite](https://img.shields.io/badge/Database-SQLite-003B57)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 **AI-powered Packaged Commodity Compliance Detection System**
 
 PARAKH AI is a Flask-based web application that automatically checks whether packaged commodity labels comply with the **Legal Metrology (Packaged Commodities) Rules (LMPC), India**. It uses OCR to extract label text, verifies mandatory declarations, calculates a compliance score, generates PDF reports, and stores scan history in SQLite.
 
 ---
 
+## 🌐 Live Demo
+
+**Website:** https://parakh-ai.up.railway.app
+
+---
+
+## 📸 Screenshots
+
+### Home Page
+
+![Home](screenshot/home.png)
+
+### Scan Result
+
+![Result](screenshot/result.png)
+
+### PDF Report
+
+![PDF](screenshot/pdf.png)
+
+### SQLite Database
+
+![Database](screenshot/database.png)
+
+---
+
 ## 🚀 Features
 
-* 📷 Upload packaged commodity images
-* 🔍 OCR using Tesseract
-* 🖼️ OpenCV image preprocessing
-* 📦 Packaged commodity detection
-* ✅ LMPC declaration verification
-* 📊 Compliance score generation
-* ⚠️ Compliant / Verification Required / Non-Compliant status
-* 📄 Automatic PDF report generation
-* 💾 SQLite database for scan history
+- 📷 Upload packaged commodity images
+- 🔍 OCR using Tesseract
+- 🖼️ OpenCV image preprocessing
+- 📦 Packaged commodity detection
+- ✅ LMPC declaration verification
+- 📊 Compliance score generation
+- ⚠️ Compliant / Verification Required / Non-Compliant status
+- 📄 Automatic PDF report generation
+- 💾 SQLite database for scan history
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Technology    | Purpose                   |
-| ------------- | ------------------------- |
-| Python        | Core programming language |
-| Flask         | Web framework             |
-| OpenCV        | Image preprocessing       |
-| Tesseract OCR | Text extraction           |
-| SQLite        | Scan history database     |
-| ReportLab     | PDF report generation     |
-| HTML/CSS      | User Interface            |
+| Technology | Purpose |
+|------------|---------|
+| Python | Core programming language |
+| Flask | Web framework |
+| OpenCV | Image preprocessing |
+| Tesseract OCR | Text extraction |
+| SQLite | Scan history database |
+| ReportLab | PDF report generation |
+| HTML/CSS | User Interface |
+| Docker | Deployment container |
+| Railway | Cloud hosting |
 
 ---
 
 ## 📂 Project Structure
 
-<escape>SIH-26034/
+```text
+SIH-26034/
 │
-├── app.py                 # Main Flask application
-├── detector.py            # Declaration detection logic
-├── compliance.py          # LMPC compliance engine
-├── database.py            # SQLite operations
-├── report.py              # PDF report generation
-├── parakh_ai.db           # SQLite database
-├── uploads/               # Uploaded images
-├── reports/               # Generated PDF reports
-├── templates/             # HTML templates
-├── static/                # CSS and assets
-└── README.md</escape>
+├── app.py
+├── detector.py
+├── compliance.py
+├── database.py
+├── report.py
+├── requirements.txt
+├── Dockerfile
+├── render.yaml
+├── Aptfile
+├── parakh_ai.db
+├── uploads/
+├── reports/
+├── screenshot/
+├── templates/
+├── static/
+└── README.md
+```
 
 ---
 
@@ -57,41 +99,52 @@ PARAKH AI is a Flask-based web application that automatically checks whether pac
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/PARAKH-AI.git
-cd PARAKH-AI
+git clone https://github.com/Sourav-De67/PARAKH_AI.git
+cd PARAKH_AI
 ```
 
 ### 2. Install dependencies
 
 ```bash
-pip install flask opencv-python pytesseract reportlab
+pip install -r requirements.txt
 ```
 
-### 3. Install Tesseract OCR
+### 3. Install Tesseract OCR (Windows)
 
-Download and install Tesseract OCR for Windows.
+Download and install **Tesseract OCR**.
 
 Default installation path:
 
-<escape>```
+```text
 C:\Program Files\Tesseract-OCR\tesseract.exe
+```
 
-````</escape>
-
-Update the path in `app.py` if necessary.
+The application automatically uses the Windows path locally and the Linux path when deployed.
 
 ### 4. Run the application
 
 ```bash
 python app.py
-````
+```
 
 Open:
 
-<escape>```
+```text
 http://127.0.0.1:5000
+```
 
-```</escape>
+---
+
+## 🐳 Docker Deployment
+
+The project includes a `Dockerfile` for deployment on cloud platforms.
+
+Build locally:
+
+```bash
+docker build -t parakh-ai .
+docker run -p 5000:10000 parakh-ai
+```
 
 ---
 
@@ -151,7 +204,7 @@ The generated report includes:
 
 ## 💾 Database
 
-SQLite stores every scan automatically.
+SQLite automatically stores every scan.
 
 Stored information includes:
 
@@ -177,5 +230,4 @@ Stored information includes:
 
 **PARAKH AI Team**
 
-Built as a Smart India Hackathon (SIH) prototype for automated packaged commodity compliance verification.
-```
+Built as a **Smart India Hackathon (SIH)** prototype for automated packaged commodity compliance verification.
